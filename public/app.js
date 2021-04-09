@@ -31,12 +31,53 @@ function init() {
   document.querySelector("#shareBtn").addEventListener('click', shareVideo)
   document.querySelector('#recordBtn').addEventListener('click', recording);
   document.querySelector('#playBtn').addEventListener('click', playVideo);
-  
+  document.querySelector('#controlVideoBtn').addEventListener('click', controlVideo);
+  document.querySelector('#controlMicBtn').addEventListener('click', controlMic);
+
   roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
 }
 
+function controlMic() {
+  if (document.querySelector('#controlMicBtn .mdc-button__label').textContent == '마이크 끄기'){
+    localStream.getAudioTracks()[0].enabled = false;
+    document.querySelector('#controlMicBtn .mdc-button__label').textContent = '마이크 켜기';
+  }
+  else{
+    localStream.getAudioTracks()[0].enabled = true;
+    document.querySelector('#controlMicBtn .mdc-button__label').textContent = '마이크 끄기';
+  }
+}
 
-function playVideo(){
+/**
+ * 캠 화면 켜기, 끄기
+ */
+async function controlVideo() {
+  if (document.querySelector('#controlVideoBtn .mdc-button__label').textContent === "비디오 끄기") {
+    let tracks = document.querySelector('#localVideo').srcObject.getTracks();
+    tracks.forEach(function (track) {
+      track.stop();
+    })
+
+    localStream.srcObject = null;
+    // 공유 버튼 on
+    document.querySelector('#shareBtn').disabled = false;
+    // 녹화 버튼 on
+    document.querySelector('#recordBtn').disabled = false;
+    document.querySelector('#controlVideoBtn .mdc-button__label').textContent = "비디오 켜기"
+  } else {
+    let stream = await navigator.mediaDevices.getUserMedia({ video: true, });
+    document.querySelector('#localVideo').srcObject = stream;
+    localStream = stream;
+    // 공유 버튼 off
+    document.querySelector('#shareBtn').disabled = true;
+    // 녹화 버튼 off
+    document.querySelector('#recordBtn').disabled = true;
+  }
+  console.log('Control Video Btn Clicked');
+
+}
+
+function playVideo() {
   const superBuffer = new Blob(recordedBlobs, { type: "video/webm" });
   recordedVideo.src = null;
   recordedVideo.srcObject = null;
@@ -46,7 +87,7 @@ function playVideo(){
 }
 
 function recording() {
-  if (document.querySelector('#recordBtn .mdc-button__label').textContent === "녹화") { 
+  if (document.querySelector('#recordBtn .mdc-button__label').textContent === "녹화") {
     startRecording();
   } else {
     stopRecording();
@@ -104,7 +145,6 @@ function handleDataAvailable(event) {
 
 
 function shareVideo() {
-
   navigator.mediaDevices
     .getDisplayMedia({ vide: true })
     .then(shareHandleSuccess, shareHandleError);
@@ -136,9 +176,6 @@ function errorMsg(msg, error) {
     console.error(error);
   }
 }
-
-
-
 
 async function createRoom() {
   document.querySelector('#createBtn').disabled = true;
@@ -318,6 +355,10 @@ async function openUserMedia(e) {
   document.querySelector('#hangupBtn').disabled = false;
   document.querySelector('#shareBtn').disabled = false;
   document.querySelector('#recordBtn').disabled = false;
+  document.querySelector('#controlVideoBtn').disabled = false;
+  document.querySelector('#controlMicBtn').disabled = false;
+
+  document.querySelector('#controlVideoBtn .mdc-button__label').textContent = '비디오 끄기'
 }
 
 async function hangUp(e) {

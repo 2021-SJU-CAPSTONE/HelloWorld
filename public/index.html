@@ -50,7 +50,14 @@
         <i class="material-icons mdc-button__icon" aria-hidden="true">close</i>
         <span class="mdc-button__label">재생</span>
     </button>
-
+    <button class="mdc-button mdc-button--raised" disabled id="controlVideoBtn">
+        <i class="material-icons mdc-button__icon" aria-hidden="true">close</i>
+        <span class="mdc-button__label">비디오 켜기</span>
+    </button>
+    <button class="mdc-button mdc-button--raised" disabled id="controlMicBtn">
+        <i class="material-icons mdc-button__icon" aria-hidden="true">close</i>
+        <span class="mdc-button__label">마이크 끄기</span>
+    </button>
     
 </div>
 <div>
@@ -60,6 +67,7 @@
     <video id="localVideo" muted autoplay playsinline></video>
     <video id="remoteVideo" autoplay playsinline></video>
     <video id="recorded" playsinline loop></video>
+    
 </div>
 <div class="mdc-dialog"
      id="room-dialog"
