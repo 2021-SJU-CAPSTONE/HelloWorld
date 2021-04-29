@@ -1,12 +1,9 @@
-mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-button'));
+mdc.ripple.MDCRipple.attachTo(document.querySelector(".mdc-button"));
 
 const configuration = {
   iceServers: [
     {
-      urls: [
-        'stun:stun1.l.google.com:19302',
-        'stun:stun2.l.google.com:19302',
-      ],
+      urls: ["stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
     },
   ],
   iceCandidatePoolSize: 10,
@@ -20,31 +17,39 @@ let roomId = null;
 
 let mediaRecorder = null;
 let recordedBlobs;
-const recordedVideo = document.querySelector('#recorded');
+const recordedVideo = document.querySelector("#recorded");
 
 function init() {
-  document.querySelector('#cameraBtn').addEventListener('click', openUserMedia);
-  document.querySelector('#hangupBtn').addEventListener('click', hangUp);
-  document.querySelector('#createBtn').addEventListener('click', createRoom);
-  document.querySelector('#joinBtn').addEventListener('click', joinRoom);
+  document.querySelector("#cameraBtn").addEventListener("click", openUserMedia);
+  document.querySelector("#hangupBtn").addEventListener("click", hangUp);
+  document.querySelector("#createBtn").addEventListener("click", createRoom);
+  document.querySelector("#joinBtn").addEventListener("click", joinRoom);
 
-  document.querySelector("#shareBtn").addEventListener('click', shareVideo)
-  document.querySelector('#recordBtn').addEventListener('click', recording);
-  document.querySelector('#playBtn').addEventListener('click', playVideo);
-  document.querySelector('#controlVideoBtn').addEventListener('click', controlVideo);
-  document.querySelector('#controlMicBtn').addEventListener('click', controlMic);
+  document.querySelector("#shareBtn").addEventListener("click", shareVideo);
+  document.querySelector("#recordBtn").addEventListener("click", recording);
+  document.querySelector("#playBtn").addEventListener("click", playVideo);
+  document
+    .querySelector("#controlVideoBtn")
+    .addEventListener("click", controlVideo);
+  document
+    .querySelector("#controlMicBtn")
+    .addEventListener("click", controlMic);
 
-  roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
+  roomDialog = new mdc.dialog.MDCDialog(document.querySelector("#room-dialog"));
 }
 
 function controlMic() {
-  if (document.querySelector('#controlMicBtn .mdc-button__label').textContent == '마이크 끄기'){
+  if (
+    document.querySelector("#controlMicBtn .mdc-button__label").textContent ==
+    "마이크 끄기"
+  ) {
     localStream.getAudioTracks()[0].enabled = false;
-    document.querySelector('#controlMicBtn .mdc-button__label').textContent = '마이크 켜기';
-  }
-  else{
+    document.querySelector("#controlMicBtn .mdc-button__label").textContent =
+      "마이크 켜기";
+  } else {
     localStream.getAudioTracks()[0].enabled = true;
-    document.querySelector('#controlMicBtn .mdc-button__label').textContent = '마이크 끄기';
+    document.querySelector("#controlMicBtn .mdc-button__label").textContent =
+      "마이크 끄기";
   }
 }
 
@@ -52,29 +57,32 @@ function controlMic() {
  * 캠 화면 켜기, 끄기
  */
 async function controlVideo() {
-  if (document.querySelector('#controlVideoBtn .mdc-button__label').textContent === "비디오 끄기") {
-    let tracks = document.querySelector('#localVideo').srcObject.getTracks();
+  if (
+    document.querySelector("#controlVideoBtn .mdc-button__label")
+      .textContent === "비디오 끄기"
+  ) {
+    let tracks = document.querySelector("#localVideo").srcObject.getTracks();
     tracks.forEach(function (track) {
       track.stop();
-    })
+    });
 
     localStream.srcObject = null;
     // 공유 버튼 on
-    document.querySelector('#shareBtn').disabled = false;
+    document.querySelector("#shareBtn").disabled = false;
     // 녹화 버튼 on
-    document.querySelector('#recordBtn').disabled = false;
-    document.querySelector('#controlVideoBtn .mdc-button__label').textContent = "비디오 켜기"
+    document.querySelector("#recordBtn").disabled = false;
+    document.querySelector("#controlVideoBtn .mdc-button__label").textContent =
+      "비디오 켜기";
   } else {
-    let stream = await navigator.mediaDevices.getUserMedia({ video: true, });
-    document.querySelector('#localVideo').srcObject = stream;
+    let stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    document.querySelector("#localVideo").srcObject = stream;
     localStream = stream;
     // 공유 버튼 off
-    document.querySelector('#shareBtn').disabled = true;
+    document.querySelector("#shareBtn").disabled = true;
     // 녹화 버튼 off
-    document.querySelector('#recordBtn').disabled = true;
+    document.querySelector("#recordBtn").disabled = true;
   }
-  console.log('Control Video Btn Clicked');
-
+  console.log("Control Video Btn Clicked");
 }
 
 function playVideo() {
@@ -87,12 +95,16 @@ function playVideo() {
 }
 
 function recording() {
-  if (document.querySelector('#recordBtn .mdc-button__label').textContent === "녹화") {
+  if (
+    document.querySelector("#recordBtn .mdc-button__label").textContent ===
+    "녹화"
+  ) {
     startRecording();
   } else {
     stopRecording();
-    document.querySelector('#recordBtn .mdc-button__label').textContent = "녹화";
-    document.querySelector('#playBtn').disabled = false;
+    document.querySelector("#recordBtn .mdc-button__label").textContent =
+      "녹화";
+    document.querySelector("#playBtn").disabled = false;
   }
 }
 
@@ -123,7 +135,8 @@ function startRecording() {
   }
 
   console.log("Created MediaRecorder", mediaRecorder, "with options", options);
-  document.querySelector('#recordBtn .mdc-button__label').textContent = "녹화 중지";
+  document.querySelector("#recordBtn .mdc-button__label").textContent =
+    "녹화 중지";
   mediaRecorder.onstop = (event) => {
     console.log("Recorder stopped: ", event);
     console.log("Recorded Blobs: ", recordedBlobs);
@@ -143,7 +156,6 @@ function handleDataAvailable(event) {
   }
 }
 
-
 function shareVideo() {
   navigator.mediaDevices
     .getDisplayMedia({ vide: true })
@@ -151,13 +163,12 @@ function shareVideo() {
 }
 
 function shareHandleSuccess(stream) {
-  let shareBtn = document.querySelector('#shareBtn');
+  let shareBtn = document.querySelector("#shareBtn");
   shareBtn.disabled = true;
   const video = document.querySelector("#localVideo");
-  console.log('VIDEO >> ', video)
+  console.log("VIDEO >> ", video);
   video.srcObject = stream;
   localStream = stream;
-
 
   stream.getVideoTracks()[0].addEventListener("ended", () => {
     errorMsg("The user has ended sharing the screen");
@@ -178,31 +189,31 @@ function errorMsg(msg, error) {
 }
 
 async function createRoom() {
-  document.querySelector('#createBtn').disabled = true;
-  document.querySelector('#joinBtn').disabled = true;
+  document.querySelector("#createBtn").disabled = true;
+  document.querySelector("#joinBtn").disabled = true;
   const db = firebase.firestore();
-  const roomRef = await db.collection('rooms').doc();
+  const roomRef = await db.collection("rooms").doc();
 
-  console.log('Create PeerConnection with configuration: ', configuration);
+  console.log("Create PeerConnection with configuration: ", configuration);
   // console.log('Room Ref: ');
   // console.table(roomRef.val());
   peerConnection = new RTCPeerConnection(configuration);
 
   registerPeerConnectionListeners();
 
-  localStream.getTracks().forEach(track => {
+  localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
   });
 
   // Code for collecting ICE candidates below
-  const callerCandidatesCollection = roomRef.collection('callerCandidates');
+  const callerCandidatesCollection = roomRef.collection("callerCandidates");
 
-  peerConnection.addEventListener('icecandidate', event => {
+  peerConnection.addEventListener("icecandidate", (event) => {
     if (!event.candidate) {
-      console.log('Got final candidate!');
+      console.log("Got final candidate!");
       return;
     }
-    console.log('Got candidate: ', event.candidate);
+    console.log("Got candidate: ", event.candidate);
     callerCandidatesCollection.add(event.candidate.toJSON());
   });
   // Code for collecting ICE candidates above
@@ -210,10 +221,10 @@ async function createRoom() {
   // Code for creating a room below
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
-  console.log('Created offer:', offer);
+  console.log("Created offer:", offer);
 
   const roomWithOffer = {
-    'offer': {
+    offer: {
       type: offer.type,
       sdp: offer.sdp,
     },
@@ -222,22 +233,23 @@ async function createRoom() {
   roomId = roomRef.id;
   console.log(`New room created with SDP offer. Room ID: ${roomRef.id}`);
   document.querySelector(
-    '#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
+    "#currentRoom"
+  ).innerText = `Current room is ${roomRef.id} - You are the caller!`;
   // Code for creating a room above
 
-  peerConnection.addEventListener('track', event => {
-    console.log('Got remote track:', event.streams[0]);
-    event.streams[0].getTracks().forEach(track => {
-      console.log('Add a track to the remoteStream:', track);
+  peerConnection.addEventListener("track", (event) => {
+    console.log("Got remote track:", event.streams[0]);
+    event.streams[0].getTracks().forEach((track) => {
+      console.log("Add a track to the remoteStream:", track);
       remoteStream.addTrack(track);
     });
   });
 
   // Listening for remote session description below
-  roomRef.onSnapshot(async snapshot => {
+  roomRef.onSnapshot(async (snapshot) => {
     const data = snapshot.data();
     if (!peerConnection.currentRemoteDescription && data && data.answer) {
-      console.log('Got remote description: ', data.answer);
+      console.log("Got remote description: ", data.answer);
       const rtcSessionDescription = new RTCSessionDescription(data.answer);
       await peerConnection.setRemoteDescription(rtcSessionDescription);
     }
@@ -245,9 +257,9 @@ async function createRoom() {
   // Listening for remote session description above
 
   // Listen for remote ICE candidates below
-  roomRef.collection('calleeCandidates').onSnapshot(snapshot => {
-    snapshot.docChanges().forEach(async change => {
-      if (change.type === 'added') {
+  roomRef.collection("calleeCandidates").onSnapshot((snapshot) => {
+    snapshot.docChanges().forEach(async (change) => {
+      if (change.type === "added") {
         let data = change.doc.data();
         console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
         await peerConnection.addIceCandidate(new RTCIceCandidate(data));
@@ -258,62 +270,66 @@ async function createRoom() {
 }
 
 function joinRoom() {
-  document.querySelector('#createBtn').disabled = true;
-  document.querySelector('#joinBtn').disabled = true;
+  document.querySelector("#createBtn").disabled = true;
+  document.querySelector("#joinBtn").disabled = true;
 
-  document.querySelector('#confirmJoinBtn').
-    addEventListener('click', async () => {
-      roomId = document.querySelector('#room-id').value;
-      console.log('Join room: ', roomId);
+  document.querySelector("#confirmJoinBtn").addEventListener(
+    "click",
+    async () => {
+      roomId = document.querySelector("#room-id").value;
+      console.log("Join room: ", roomId);
       document.querySelector(
-        '#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
+        "#currentRoom"
+      ).innerText = `Current room is ${roomId} - You are the callee!`;
       await joinRoomById(roomId);
-    }, { once: true });
+    },
+    { once: true }
+  );
   roomDialog.open();
 }
 
 async function joinRoomById(roomId) {
   const db = firebase.firestore();
   console.log(db.toJSON);
-  const roomRef = db.collection('rooms').doc(`${roomId}`);
+  const roomRef = db.collection("rooms").doc(`${roomId}`);
   console.log(roomRef.toJSON);
   const roomSnapshot = await roomRef.get();
-  console.log('Got room:', roomSnapshot.exists);
+  console.log("Got room:", roomSnapshot.exists);
 
   if (roomSnapshot.exists) {
-    console.log('Create PeerConnection with configuration: ', configuration);
+    console.log("Create PeerConnection with configuration: ", configuration);
     peerConnection = new RTCPeerConnection(configuration);
     registerPeerConnectionListeners();
-    localStream.getTracks().forEach(track => {
+    localStream.getTracks().forEach((track) => {
       peerConnection.addTrack(track, localStream);
     });
 
     // Code for collecting ICE candidates below
-    const calleeCandidatesCollection = roomRef.collection('calleeCandidates');
-    peerConnection.addEventListener('icecandidate', event => {
+    const calleeCandidatesCollection = roomRef.collection("calleeCandidates");
+    peerConnection.addEventListener("icecandidate", (event) => {
       if (!event.candidate) {
-        console.log('Got final candidate!');
+        console.log("Got final candidate!");
         return;
       }
-      console.log('Got candidate: ', event.candidate);
+      console.log("Got candidate: ", event.candidate);
       calleeCandidatesCollection.add(event.candidate.toJSON());
     });
     // Code for collecting ICE candidates above
 
-    peerConnection.addEventListener('track', event => {
-      console.log('Got remote track:', event.streams[0]);
-      event.streams[0].getTracks().forEach(track => {
-        console.log('Add a track to the remoteStream:', track);
+    peerConnection.addEventListener("track", (event) => {
+      console.log("Got remote track:", event.streams[0]);
+      event.streams[0].getTracks().forEach((track) => {
+        console.log("Add a track to the remoteStream:", track);
         remoteStream.addTrack(track);
       });
     });
 
     // Code for creating SDP answer below
     const offer = roomSnapshot.data().offer;
-    console.log('Got offer:', offer);
+    console.log("Got offer:", offer);
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await peerConnection.createAnswer();
-    console.log('Created answer:', answer);
+    console.log("Created answer:", answer);
     await peerConnection.setLocalDescription(answer);
 
     const roomWithAnswer = {
@@ -326,9 +342,9 @@ async function joinRoomById(roomId) {
     // Code for creating SDP answer above
 
     // Listening for remote ICE candidates below
-    roomRef.collection('callerCandidates').onSnapshot(snapshot => {
-      snapshot.docChanges().forEach(async change => {
-        if (change.type === 'added') {
+    roomRef.collection("callerCandidates").onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach(async (change) => {
+        if (change.type === "added") {
           let data = change.doc.data();
           console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
           await peerConnection.addIceCandidate(new RTCIceCandidate(data));
@@ -338,61 +354,64 @@ async function joinRoomById(roomId) {
     // Listening for remote ICE candidates above
   }
 }
-
+//Done
 async function openUserMedia(e) {
   console.log(navigator.toJSON);
-  const stream = await navigator.mediaDevices.getUserMedia(
-    { video: true, audio: true });
-  document.querySelector('#localVideo').srcObject = stream;
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: true,
+  });
+  document.querySelector("#localVideo").srcObject = stream;
   localStream = stream;
   remoteStream = new MediaStream();
-  document.querySelector('#remoteVideo').srcObject = remoteStream;
+  document.querySelector("#remoteVideo").srcObject = remoteStream;
 
-  console.log('Stream:', document.querySelector('#localVideo').srcObject);
-  document.querySelector('#cameraBtn').disabled = true;
-  document.querySelector('#joinBtn').disabled = false;
-  document.querySelector('#createBtn').disabled = false;
-  document.querySelector('#hangupBtn').disabled = false;
-  document.querySelector('#shareBtn').disabled = false;
-  document.querySelector('#recordBtn').disabled = false;
-  document.querySelector('#controlVideoBtn').disabled = false;
-  document.querySelector('#controlMicBtn').disabled = false;
+  console.log("Stream:", document.querySelector("#localVideo").srcObject);
+  document.querySelector("#cameraBtn").disabled = true;
+  document.querySelector("#joinBtn").disabled = false;
+  document.querySelector("#createBtn").disabled = false;
+  document.querySelector("#hangupBtn").disabled = false;
+  document.querySelector("#shareBtn").disabled = false;
+  document.querySelector("#recordBtn").disabled = false;
+  document.querySelector("#controlVideoBtn").disabled = false;
+  document.querySelector("#controlMicBtn").disabled = false;
 
-  document.querySelector('#controlVideoBtn .mdc-button__label').textContent = '비디오 끄기'
+  document.querySelector("#controlVideoBtn .mdc-button__label").textContent =
+    "비디오 끄기";
 }
 
 async function hangUp(e) {
-  const tracks = document.querySelector('#localVideo').srcObject.getTracks();
-  tracks.forEach(track => {
+  const tracks = document.querySelector("#localVideo").srcObject.getTracks();
+  tracks.forEach((track) => {
     track.stop();
   });
 
   if (remoteStream) {
-    remoteStream.getTracks().forEach(track => track.stop());
+    remoteStream.getTracks().forEach((track) => track.stop());
   }
 
   if (peerConnection) {
     peerConnection.close();
   }
 
-  document.querySelector('#localVideo').srcObject = null;
-  document.querySelector('#remoteVideo').srcObject = null;
-  document.querySelector('#cameraBtn').disabled = false;
-  document.querySelector('#joinBtn').disabled = true;
-  document.querySelector('#createBtn').disabled = true;
-  document.querySelector('#hangupBtn').disabled = true;
-  document.querySelector('#currentRoom').innerText = '';
+  document.querySelector("#localVideo").srcObject = null;
+  document.querySelector("#remoteVideo").srcObject = null;
+  document.querySelector("#cameraBtn").disabled = false;
+  document.querySelector("#joinBtn").disabled = true;
+  document.querySelector("#createBtn").disabled = true;
+  document.querySelector("#hangupBtn").disabled = true;
+  document.querySelector("#currentRoom").innerText = "";
 
   // Delete room on hangup
   if (roomId) {
     const db = firebase.firestore();
-    const roomRef = db.collection('rooms').doc(roomId);
-    const calleeCandidates = await roomRef.collection('calleeCandidates').get();
-    calleeCandidates.forEach(async candidate => {
+    const roomRef = db.collection("rooms").doc(roomId);
+    const calleeCandidates = await roomRef.collection("calleeCandidates").get();
+    calleeCandidates.forEach(async (candidate) => {
       await candidate.ref.delete();
     });
-    const callerCandidates = await roomRef.collection('callerCandidates').get();
-    callerCandidates.forEach(async candidate => {
+    const callerCandidates = await roomRef.collection("callerCandidates").get();
+    callerCandidates.forEach(async (candidate) => {
       await candidate.ref.delete();
     });
     await roomRef.delete();
@@ -402,22 +421,24 @@ async function hangUp(e) {
 }
 
 function registerPeerConnectionListeners() {
-  peerConnection.addEventListener('icegatheringstatechange', () => {
+  peerConnection.addEventListener("icegatheringstatechange", () => {
     console.log(
-      `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
+      `ICE gathering state changed: ${peerConnection.iceGatheringState}`
+    );
   });
 
-  peerConnection.addEventListener('connectionstatechange', () => {
+  peerConnection.addEventListener("connectionstatechange", () => {
     console.log(`Connection state change: ${peerConnection.connectionState}`);
   });
 
-  peerConnection.addEventListener('signalingstatechange', () => {
+  peerConnection.addEventListener("signalingstatechange", () => {
     console.log(`Signaling state change: ${peerConnection.signalingState}`);
   });
 
-  peerConnection.addEventListener('iceconnectionstatechange ', () => {
+  peerConnection.addEventListener("iceconnectionstatechange ", () => {
     console.log(
-      `ICE connection state change: ${peerConnection.iceConnectionState}`);
+      `ICE connection state change: ${peerConnection.iceConnectionState}`
+    );
   });
 }
 
